@@ -1,0 +1,199 @@
+diff --git a/src/azure_base64.c b/src/azure_base64.c
+index c22e6336..b37000b8 100644
+--- a/c-utility/src/azure_base64.c
++++ b/c-utility/src/azure_base64.c
+@@ -151,11 +151,11 @@ static void Base64decode(unsigned char *decodedString, const char *base64String)
+         (void)base64toValue(base64String[indexOfFirstEncodedChar + 1], &c2);
+         (void)base64toValue(base64String[indexOfFirstEncodedChar + 2], &c3);
+         (void)base64toValue(base64String[indexOfFirstEncodedChar + 3], &c4);
+-        decodedString[decodedIndex] = (c1 << 2) | (c2 >> 4);
++        decodedString[decodedIndex] = (unsigned char) ((c1 << 2) | (c2 >> 4));
+         decodedIndex++;
+-        decodedString[decodedIndex] = ((c2 & 0x0f) << 4) | (c3 >> 2);
++        decodedString[decodedIndex] = (unsigned char) (((c2 & 0x0f) << 4) | (c3 >> 2));
+         decodedIndex++;
+-        decodedString[decodedIndex] = ((c3 & 0x03) << 6) | c4;
++        decodedString[decodedIndex] = (unsigned char) (((c3 & 0x03) << 6) | c4);
+         decodedIndex++;
+         numberOfEncodedChars -= 4;
+         indexOfFirstEncodedChar += 4;
+@@ -168,7 +168,7 @@ static void Base64decode(unsigned char *decodedString, const char *base64String)
+         unsigned char c2;
+         (void)base64toValue(base64String[indexOfFirstEncodedChar], &c1);
+         (void)base64toValue(base64String[indexOfFirstEncodedChar + 1], &c2);
+-        decodedString[decodedIndex] = (c1 << 2) | (c2 >> 4);
++        decodedString[decodedIndex] = (unsigned char) ((c1 << 2) | (c2 >> 4));
+     }
+     else if (numberOfEncodedChars == 3)
+     {
+@@ -178,9 +178,9 @@ static void Base64decode(unsigned char *decodedString, const char *base64String)
+         (void)base64toValue(base64String[indexOfFirstEncodedChar], &c1);
+         (void)base64toValue(base64String[indexOfFirstEncodedChar + 1], &c2);
+         (void)base64toValue(base64String[indexOfFirstEncodedChar + 2], &c3);
+-        decodedString[decodedIndex] = (c1 << 2) | (c2 >> 4);
++        decodedString[decodedIndex] = (unsigned char) ((c1 << 2) | (c2 >> 4));
+         decodedIndex++;
+-        decodedString[decodedIndex] = ((c2 & 0x0f) << 4) | (c3 >> 2);
++        decodedString[decodedIndex] = (unsigned char) (((c2 & 0x0f) << 4) | (c3 >> 2));
+     }
+ }
+ 
+@@ -260,12 +260,12 @@ static STRING_HANDLE Base64_Encode_Internal(const unsigned char* source, size_t
+         {
+             char c1 = base64char(source[currentPosition] >> 2);
+             char c2 = base64char(
+-                ((source[currentPosition] & 3) << 4) |
+-                    (source[currentPosition + 1] >> 4)
++                (unsigned char) (((source[currentPosition] & 3) << 4) |
++                    (source[currentPosition + 1] >> 4))
+             );
+             char c3 = base64char(
+-                ((source[currentPosition + 1] & 0x0F) << 2) |
+-                    ((source[currentPosition + 2] >> 6) & 3)
++                (unsigned char) (((source[currentPosition + 1] & 0x0F) << 2) |
++                    ((source[currentPosition + 2] >> 6) & 3))
+             );
+             char c4 = base64char(
+                 source[currentPosition + 2] & 0x3F
+@@ -281,8 +281,8 @@ static STRING_HANDLE Base64_Encode_Internal(const unsigned char* source, size_t
+         {
+             char c1 = base64char(source[currentPosition] >> 2);
+             char c2 = base64char(
+-                ((source[currentPosition] & 0x03) << 4) |
+-                    (source[currentPosition + 1] >> 4)
++                (unsigned char) (((source[currentPosition] & 0x03) << 4) |
++                    (source[currentPosition + 1] >> 4))
+             );
+             char c3 = base64b16(source[currentPosition + 1] & 0x0F);
+             encoded[destinationPosition++] = c1;
+diff --git a/src/base32.c b/src/base32.c
+index 937bd7c7..5bc9ae63 100644
+--- a/c-utility/src/base32.c
++++ b/c-utility/src/base32.c
+@@ -220,11 +220,11 @@ static BUFFER_HANDLE base32_decode_impl(const char* source)
+                 else
+                 {
+                     // Codes_SRS_BASE32_07_025: [ base32_decode_impl shall group 5 bytes at a time into the temp buffer. ]
+-                    *dest_buff++ = ((input[0] & 0x1f) << 3) | ((input[1] & 0x1c) >> 2);
+-                    *dest_buff++ = ((input[1] & 0x03) << 6) | ((input[2] & 0x1f) << 1) | ((input[3] & 0x10) >> 4);
+-                    *dest_buff++ = ((input[3] & 0x0f) << 4) | ((input[4] & 0x1e) >> 1);
+-                    *dest_buff++ = ((input[4] & 0x01) << 7) | ((input[5] & 0x1f) << 2) | ((input[6] & 0x18) >> 3);
+-                    *dest_buff++ = ((input[6] & 0x07) << 5) | (input[7] & 0x1f);
++                    *dest_buff++ = (unsigned char) (((input[0] & 0x1f) << 3) | ((input[1] & 0x1c) >> 2));
++                    *dest_buff++ = (unsigned char) (((input[1] & 0x03) << 6) | ((input[2] & 0x1f) << 1) | ((input[3] & 0x10) >> 4));
++                    *dest_buff++ = (unsigned char) (((input[3] & 0x0f) << 4) | ((input[4] & 0x1e) >> 1));
++                    *dest_buff++ = (unsigned char) (((input[4] & 0x01) << 7) | ((input[5] & 0x1f) << 2) | ((input[6] & 0x18) >> 3));
++                    *dest_buff++ = (unsigned char) (((input[6] & 0x07) << 5) | (input[7] & 0x1f));
+                     dest_size += TARGET_BLOCK_SIZE;
+                     // If there is padding remove it
+                     // Because we are packing 5 bytes into an 8 byte variable we need to check every other
+diff --git a/src/urlencode.c b/src/urlencode.c
+index f62d1d80..18a96a85 100644
+--- a/c-utility/src/urlencode.c
++++ b/c-utility/src/urlencode.c
+@@ -174,7 +174,7 @@ static unsigned char charFromNibbles(char bigNibbleStr, char littleNibbleStr)
+     unsigned char bigNibbleVal = NIBBLE_FROM_STRING(bigNibbleStr);
+     unsigned char littleNibbleVal = NIBBLE_FROM_STRING(littleNibbleStr);
+ 
+-    return bigNibbleVal << 4 | littleNibbleVal;
++    return (unsigned char) (bigNibbleVal << 4 | littleNibbleVal);
+ }
+ 
+ static void createDecodedString(const char* input, size_t input_size, char* output)
+diff --git a/adapters/socketio_berkeley.c b/adapters/socketio_berkeley.c
+index 38d13650..5b3ff5fc 100755
+--- a/c-utility/adapters/socketio_berkeley.c
++++ b/c-utility/adapters/socketio_berkeley.c
+@@ -443,7 +443,11 @@ static NETWORK_INTERFACE_DESCRIPTION* create_network_interface_description(struc
+     else
+     {
+         char* ip_address;
++#ifdef __VXWORKS__
++        unsigned char* mac = (unsigned char*)ifr->ifr_ifru.ifru_addr.sa_data;
++#else
+         unsigned char* mac = (unsigned char*)ifr->ifr_hwaddr.sa_data;
++#endif
+ 
+         if ((result->mac_address = (char*)malloc(sizeof(char) * MAC_ADDRESS_STRING_LENGTH)) == NULL)
+         {
+@@ -997,7 +997,7 @@
+                     // Do not log error here due to this is probably the socket being closed on the other end
+                     indicate_error(socket_io_instance);
+                 }
+-                else if (received < 0 && errno != EAGAIN)
++                else if (received < 0 && !((errno == EAGAIN) || (errno == EWOULDBLOCK)))
+                 {
+                     LogError("Socketio_Failure: Receiving data from endpoint: errno=%d.", errno);
+                     indicate_error(socket_io_instance);
+
+diff --git a/adapters/uniqueid_linux.c b/adapters/uniqueid_linux.c
+index e8891a5b..68c4818f 100644
+--- a/c-utility/adapters/uniqueid_linux.c
++++ b/c-utility/adapters/uniqueid_linux.c
+@@ -4,7 +4,11 @@
+ #include <stdlib.h>
+ #include <stdint.h>
+ #include <string.h>
++#ifdef __VXWORKS__
++#include <uuid.h>
++#else
+ #include <uuid/uuid.h>
++#endif
+ #include "azure_c_shared_utility/uniqueid.h"
+ #include "azure_c_shared_utility/xlogging.h"
+ 
+@@ -23,6 +27,18 @@ UNIQUEID_RESULT UniqueId_Generate(char* uid, size_t len)
+     }
+     else
+     {
++#ifdef __VXWORKS__
++        uuid_t uuidVal;
++        uint32_t status;
++
++        uuid_create(&uuidVal, &status);
++        if (status != uuid_s_ok)
++            return UNIQUEID_INVALID_ARG;
++
++        uuid_to_string(&uuidVal, uid, &status);
++        if (status != uuid_s_ok)
++            return UNIQUEID_INVALID_ARG;
++#else
+         uuid_t uuidVal;
+         uuid_generate(uuidVal);
+ 
+@@ -30,6 +46,7 @@ UNIQUEID_RESULT UniqueId_Generate(char* uid, size_t len)
+         memset(uid, 0, len);
+         uuid_unparse(uuidVal, uid);
+         result = UNIQUEID_OK;
++#endif /* __VXWORKS__ */
+     }
+     return result;
+ }
+diff --git a/src/gbnetwork.c b/src/gbnetwork.c
+index dbc572d5..49ba7a52 100644
+--- a/c-utility/src/gbnetwork.c
++++ b/c-utility/src/gbnetwork.c
+@@ -8,6 +8,10 @@
+ #include "azure_c_shared_utility/optimize_size.h"
+ #include "azure_c_shared_utility/xlogging.h"
+ 
++#ifdef __VXWORKS__
++#include <vxWorks.h>
++#endif
++
+ #ifdef WIN32
+ #include <winsock2.h>
+ #else
+diff --git a/configs/azure_iot_build_rules.cmake b/configs/azure_iot_build_rules.cmake
+index be3e14fe..a7934e2e 100644
+--- a/c-utility/configs/azure_iot_build_rules.cmake
++++ b/c-utility/configs/azure_iot_build_rules.cmake
+@@ -73,7 +73,7 @@ if(MSVC)
+ elseif(UNIX) #LINUX OR APPLE 
+     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Werror")
+     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror")
+-    if(NOT (IN_OPENWRT OR APPLE))
++    if(NOT (IN_OPENWRT OR APPLE OR VXWORKS))
+         set (CMAKE_C_FLAGS "-D_POSIX_C_SOURCE=200112L ${CMAKE_C_FLAGS}")
+     endif()
+ endif()
