@@ -66,10 +66,10 @@ index c22e6336..b37000b8 100644
              );
              char c3 = base64b16(source[currentPosition + 1] & 0x0F);
              encoded[destinationPosition++] = c1;
-diff --git a/src/base32.c b/src/base32.c
+diff --git a/src/azure_base32.c b/src/azure_base32.c
 index 937bd7c7..5bc9ae63 100644
---- a/c-utility/src/base32.c
-+++ b/c-utility/src/base32.c
+--- a/c-utility/src/azure_base32.c
++++ b/c-utility/src/azure_base32.c
 @@ -220,11 +220,11 @@ static BUFFER_HANDLE base32_decode_impl(const char* source)
                  else
                  {
